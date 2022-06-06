@@ -29,9 +29,11 @@ the stack from the init line. `-r` also works for files.
 files can be piped directly into rpnc or it can load them with the positionl arguments.
 if the file argument is not given, stdin is used.
 
+rpnc will execute the `~/.rpncrc` file on init, if it exists. this can be disabled with `-c`.
+
 ## operators
 
-any decimal integer literal will push that number to the stack. hex and binary aren't supported.
+any decimal literal will push that number to the stack. hex and binary aren't supported.
 
 - `+`: add the top two values on the stack (`1 2 +` gives 3)
 - `-`: pop a and b, push b-a (`2 1 -` gives 1)

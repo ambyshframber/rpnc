@@ -147,7 +147,7 @@ impl Shell {
                     }
                     "." => println!("{}", self.peek_top()?),
                     ".s" => {
-                        for i in self.stack.iter().rev() {
+                        for i in self.stack.iter() {
                             print!("{} ", i)
                         }
                         println!()
@@ -192,6 +192,16 @@ impl Shell {
                         }
                         let x_u = self.stack[self.stack.len() - (u + 1)];
                         self.stack.push(x_u)
+                    }
+                    "put" => {
+                        // x_u ... x_1 x_0 y u -- y ... x_1 x_0 x_u
+                        let u = self.get_top()? as usize;
+                        let y = self.get_top()?; // x_u ... x_1 x_0
+                        let l = self.stack.len();
+                        if u >= l {
+                            return Err(RpnError::StackUnderflow);
+                        }
+                        self.stack[l - (u + 1)] = y
                     }
                     "pi" => self.stack.push(PI),
                     "e" => self.stack.push(E),
