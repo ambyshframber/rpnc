@@ -33,13 +33,14 @@ rpnc will execute the `~/.rpncrc` file on init, if it exists. this can be disabl
 
 ## operators
 
-any decimal literal will push that number to the stack. hex and binary aren't supported.
+any decimal literal will push that number to the stack. hex and binary aren't supported.  
+this section uses `--` notation to show the stack before and after the operation. the top of the stack is to the right
 
-- `+`: add the top two values on the stack (`1 2 +` gives 3)
-- `-`: pop a and b, push b-a (`2 1 -` gives 1)
+- `+`: add the top two values on the stack (`1 2 -- 3`)
+- `-`: pop a and b, push b-a (`2 1 -- 1`)
 - `*`: pop a and b, push a*b
-- `/`: pop a and b, push b/a (`4 2 /` gives 2)
-- `**`: pop a and b, push b to the power of a (`8 2 **` gives 64)
+- `/`: pop a and b, push b/a (`4 2 -- 2`)
+- `**`: pop a and b, push b to the power of a (`8 2 -- 64`)
 - `%`: pop a and b, push b mod a
 - `log`: pop a and b, push log a of b
 - `ln`: pop x, push ln x (equivalent to `e log`)
@@ -55,6 +56,8 @@ any decimal literal will push that number to the stack. hex and binary aren't su
 - `pi`: push pi to the stack
 - `e`: push e to the stack
 - `dice`: pop x. push a random number in range [0, x)
+- `pick`: `x_u ... x_1 x_0 u -- x_u ... x_1 x_0 x_u`
+- `put`: `x_u ... x_1 x_0 y u -- y ... x_1 x_0`
 - `bye`: exit rpnc (EOF or ctrl-d also works)  
 this is where it gets real spicy. that's right, it's forth time  
 - `:`: start "compiling" a user-defined word. the word directly after the `:` is the name, and all other words until the first `;` will be added to the definition
