@@ -1,3 +1,5 @@
+use rustyline::error::ReadlineError;
+
 #[derive(thiserror::Error, Debug)]
 pub enum RpnError {
     #[error("stack underflow")]
@@ -6,4 +8,6 @@ pub enum RpnError {
     UndefinedWord(String),
     #[error("io error")]
     IoErr(#[from] std::io::Error),
+    #[error("readline error")]
+    RlError(#[from] ReadlineError)
 }

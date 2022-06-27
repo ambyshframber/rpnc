@@ -1,7 +1,7 @@
-use rand::{thread_rng, Rng};
+use fastrand::i64;
 use std::collections::HashMap;
 use std::f64::consts::*;
-use std::io::{stdin, stdout, Write};
+use rustyline::{error::ReadlineError, Editor};
 
 use crate::utils::RpnError;
 
@@ -22,6 +22,7 @@ impl Shell {
         Shell::default()
     }
     pub fn run(&mut self) -> Result<(), RpnError> {
+        /*
         let mut buf = String::new();
         let std_in = stdin();
         loop {
@@ -39,6 +40,28 @@ impl Shell {
             }
             if self.do_line(&buf) {
                 return Ok(());
+            }
+        }*/
+        let mut rl = Editor::<()>::new();
+        loop {
+            let prompt = if self.interactive { "> " } else { "" };
+            let line = rl.readline(prompt);
+            match line {
+                Ok(s) => {
+                    if self.do_line(&s) {
+                        return Ok(())
+                    }
+                    rl.add_history_entry(s);
+                }
+                Err(ReadlineError::Interrupted) => {
+                    return Ok(())
+                }
+                Err(ReadlineError::Eof) => {
+                    return Ok(())
+                }
+                Err(e) => {
+                    return Err(e.into())
+                }
             }
         }
     }
@@ -207,7 +230,7 @@ impl Shell {
                     "e" => self.stack.push(E),
                     "dice" => {
                         let a = self.get_top()? as i64;
-                        let x: i64 = thread_rng().gen_range(0..a);
+                        let x: i64 = i64(0..a);
                         self.stack.push(x as f64)
                     }
                     "bye" => return Ok(true), // cooler than "exit" or "quit"
