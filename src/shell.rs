@@ -147,7 +147,7 @@ impl Shell {
                     }
                     "." => println!("{}", self.peek_top()?),
                     ".s" => {
-                        for i in self.stack.iter() {
+                        for i in self.stack.iter().rev() {
                             print!("{} ", i)
                         }
                         println!()
