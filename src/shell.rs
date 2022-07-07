@@ -101,8 +101,10 @@ impl Shell {
             if w == ";" {
                 // end compile
                 self.compiling = false;
-                self.bonus_words
-                    .insert(self.cur_word_name.clone(), self.cur_word_buf.clone());
+                self.bonus_words.insert(
+                    self.cur_word_name.clone(),
+                    self.cur_word_buf.clone()
+                );
             } else if self.found_name {
                 // name HAS been found
                 self.cur_word_buf.push(w.into())
@@ -233,6 +235,7 @@ impl Shell {
                         let x: i64 = i64(0..a);
                         self.stack.push(x as f64)
                     }
+                    "clear" => self.stack.clear(),
                     "bye" => return Ok(true), // cooler than "exit" or "quit"
 
                     // forth time!

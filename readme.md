@@ -58,6 +58,7 @@ this section uses `--` notation to show the stack before and after the operation
 - `dice`: pop x. push a random number in range [0, x)
 - `pick`: `x_u ... x_1 x_0 u -- x_u ... x_1 x_0 x_u`
 - `put`: `x_u ... x_1 x_0 y u -- y ... x_1 x_0`
+- `clear`: empty the stack
 - `bye`: exit rpnc (EOF or ctrl-d also works)
 
 this is where it gets real spicy. that's right, it's forth time  
