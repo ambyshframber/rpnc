@@ -31,6 +31,8 @@ if the file argument is not given, stdin is used.
 
 rpnc will execute the `~/.rpncrc` file on init, if it exists. this can be disabled with `-c`.
 
+when rpnc exits, it will take the top value of the stack, convert it to an i32, and return it as the exit value.
+
 ## operators
 
 any decimal literal will push that number to the stack. hex and binary aren't supported.  

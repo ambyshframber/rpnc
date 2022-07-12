@@ -21,6 +21,14 @@ impl Shell {
     pub fn new() -> Shell {
         Shell::default()
     }
+    pub fn get_exit_val(&self) -> i32 {
+        if !self.stack.is_empty() {
+            self.stack[self.stack.len() - 1] as i32
+        }
+        else {
+            0
+        } 
+    }
     pub fn run(&mut self) -> Result<(), RpnError> {
         /*
         let mut buf = String::new();
@@ -68,13 +76,13 @@ impl Shell {
     pub fn do_line(&mut self, l: &str) -> bool {
         if l.starts_with('#') {
             // posix
-            return false;
+            return false
         }
         for w in l.split_ascii_whitespace() {
             match self.do_word(w) {
                 Ok(halted) => {
                     if halted {
-                        return true;
+                        return true
                     }
                 }
                 Err(e) => {

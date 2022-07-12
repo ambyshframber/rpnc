@@ -4,6 +4,7 @@ use std::fs::read_to_string;
 use std::env::var;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use std::process::exit;
 
 mod shell;
 mod utils;
@@ -84,4 +85,5 @@ fn main() {
             s.run().unwrap()
         }
     }
+    exit(s.get_exit_val())
 }
