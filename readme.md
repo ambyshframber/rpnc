@@ -54,7 +54,8 @@ this section uses `--` notation to show the stack before and after the operation
 - `pop`: remove the top value of the stack
 - `dup`: duplicate the top value of the stack
 - `over`: duplicate the second value from the top (`a b -- a b a`)
-- `rot`: swap the second and third values on the stack (`a b c -- b a c`)
+- `rot`: rotate the top 3 values of the stack (`a b c -- b c a`)
+- `-rot`: rotate the top 3 values of the stack, the other way (`a b c -- c a b`)
 - `pi`: push pi to the stack
 - `e`: push e to the stack
 - `dice`: pop x. push a random number in range [0, x)

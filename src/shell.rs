@@ -8,6 +8,7 @@ use crate::utils::RpnError;
 #[derive(Default, Debug)]
 pub struct Shell {
     stack: Vec<f64>,
+
     bonus_words: HashMap<String, Vec<String>>,
     pub interactive: bool,
     in_comment: bool,
@@ -15,6 +16,8 @@ pub struct Shell {
     found_name: bool,
     cur_word_name: String,
     cur_word_buf: Vec<String>,
+    not_doing_an_if: bool,
+    if_layers: i32
 }
 
 impl Shell {
@@ -30,26 +33,6 @@ impl Shell {
         } 
     }
     pub fn run(&mut self) -> Result<(), RpnError> {
-        /*
-        let mut buf = String::new();
-        let std_in = stdin();
-        loop {
-            buf.clear();
-            if self.interactive {
-                print!("> "); // funtsy prompt
-            }
-            stdout().flush()?;
-            if std_in.read_line(&mut buf)? == 0 {
-                // 0 if eof
-                if self.interactive {
-                    println!()
-                }
-                return Ok(());
-            }
-            if self.do_line(&buf) {
-                return Ok(());
-            }
-        }*/
         let mut rl = Editor::<()>::new();
         loop {
             let prompt = if self.interactive { "> " } else { "" };
@@ -123,6 +106,18 @@ impl Shell {
             }
             return Ok(false);
         }
+        if self.not_doing_an_if {
+            if w == "if" {
+                self.if_layers += 1
+            }
+            else if w == "then" {
+                self.if_layers -= 1
+            }
+            if self.if_layers == -1 {
+                self.not_doing_an_if = false
+            }
+            return Ok(false)
+        }
         match w.parse() {
             Ok(v) => self.stack.push(v),
             Err(_) => {
@@ -178,6 +173,24 @@ impl Shell {
                         let a = self.get_top()?;
                         self.stack.push(a.atan())
                     }
+		            "fact" => {
+			            let mut a = self.get_top()?;
+                        self.stack.push(if a.fract() == 0.0 && a.is_sign_positive() {
+                            let mut x = 1.0;
+                                while a > 0.0 {
+                                    x *= a;
+                                    a -= 1.0;
+                                    if x == f64::INFINITY {
+                                        break
+                                    }
+                                }
+                                x
+                            }
+                            else {
+                                f64::NAN
+                            }
+                        )
+		            }
                     "." => println!("{}", self.peek_top()?),
                     ".s" => {
                         for i in self.stack.iter().rev() {
@@ -186,7 +199,11 @@ impl Shell {
                         println!()
                     }
                     ".stdf" => {
-                        let x = self.peek_top()?;
+                        let mut x = self.peek_top()?;
+                        if x.is_sign_negative() {
+                            x = x.abs();
+                            print!("-")
+                        }
                         let exp = x.log(10.0).floor();
                         let disp = x / 10f64.powf(exp);
                         println!("{:.4} * 10^{}", disp, exp)
@@ -211,13 +228,20 @@ impl Shell {
                         self.stack.push(op)
                     }
                     "rot" => {
-                        // a b c -- b a c
+                        // a b c -- b c a
                         let ops = self.get_top_n(3)?;
                         self.stack.push(ops[1]);
-                        self.stack.push(ops[2]);
                         self.stack.push(ops[0]);
+                        self.stack.push(ops[2]);
+               	    }
+                    "-rot" => {
+                        // a b c -- c a b
+                        let ops = self.get_top_n(3)?;
+                        self.stack.push(ops[0]);
+                        self.stack.push(ops[2]);
+                        self.stack.push(ops[1]);
                     }
-                    "pick" => { // unstable (kinda) also theres no put yet
+                    "pick" => {
                         // x_u ... x_1 x_0 u -- x_u ... x_1 x_0 x_u
                         let u = self.get_top()? as usize;
                         if u >= self.stack.len() {
@@ -243,8 +267,16 @@ impl Shell {
                         let x: i64 = i64(0..a);
                         self.stack.push(x as f64)
                     }
+                    "if" => {
+                        self.not_doing_an_if = self.get_top()? == 0.0
+                    }
+                    "then" => {}
+                    "round" => {
+                        let x = self.get_top()?.round();
+                        self.stack.push(x)
+                    }
                     "clear" => self.stack.clear(),
-                    "bye" => return Ok(true), // cooler than "exit" or "quit"
+                    "bye"|"exit"|"quit" => return Ok(true), // cooler than "exit" or "quit"
 
                     // forth time!
                     ":" => {
